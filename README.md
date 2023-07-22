@@ -1,0 +1,1 @@
+This is a repository for a weather app developed via React Native
