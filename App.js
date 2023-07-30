@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, Image, ImageBackground, TouchableOpacity, Platform,Pressable } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, Image, ImageBackground, TouchableOpacity, Platform } from 'react-native';
 import * as Location from 'expo-location';
 
 export default function App() {
+
+  const [unit,setUnit] = useState('metric');
+  const [unitLetter, setLetter] = useState('C');
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const today = new Date().getDay();
 
@@ -34,14 +37,14 @@ export default function App() {
 
   useEffect(() => {
     getWeather();
-  }, []);
+  }, [unit]);
 
   const handleForecastPress = async (day) => {
     try {
       const location = await Location.getCurrentPositionAsync();
       const latitude = location.coords.latitude;
       const longitude = location.coords.longitude;
-      const forecastURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=current,minutely,hourly&units=metric&appid=${Weather_API}`;
+      const forecastURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=current,minutely,hourly&units=${unit}&appid=${Weather_API}`;
       const response = await fetch(forecastURL);
       const data = await response.json();
 
@@ -100,31 +103,31 @@ export default function App() {
     const latitude = location.coords.latitude;
     const longitude = location.coords.longitude;
     //current weather info
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${Weather_API}`;
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=${unit}&appid=${Weather_API}`;
     const response = await fetch(weatherUrl);
     const data = await response.json();
     const icon = data.weather[0].icon;
     setRegion(data.name);
     setWeather(data.weather[0].main);
-    setTemp(Math.round(data.main.temp))
+    setTemp(data.main.temp);
     setCountry(data.sys.country);
     setIcon(`https://openweathermap.org/img/wn/${icon}@4x.png`);
 
     //weather forecast data
-    const forecastURL = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${latitude}&lon=${longitude}&cnt=4&appid=${Weather_API}&units=metric`;
+    const forecastURL = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${latitude}&lon=${longitude}&cnt=4&appid=${Weather_API}&units=${unit}`;
     const forecastResponse = await fetch(forecastURL);
     const forecastData = await forecastResponse.json();
 
     setWeather1(forecastData.list[1].weather[0].main);
-    setTemp1(Math.round(forecastData.list[1].temp.day));
+    setTemp1(forecastData.list[1].temp.day);
     setIcon1(`https://openweathermap.org/img/wn/${forecastData.list[1].weather[0].icon}@4x.png`);
 
     setWeather2(forecastData.list[2].weather[0].main);
-    setTemp2(Math.round(forecastData.list[2].temp.day));
+    setTemp2(forecastData.list[2].temp.day);
     setIcon2(`https://openweathermap.org/img/wn/${forecastData.list[2].weather[0].icon}@4x.png`);
 
     setWeather3(forecastData.list[3].weather[0].main);
-    setTemp3(Math.round(forecastData.list[3].temp.day));
+    setTemp3(forecastData.list[3].temp.day);
     setIcon3(`https://openweathermap.org/img/wn/${forecastData.list[3].weather[0].icon}@4x.png`);
   }
 
@@ -136,6 +139,16 @@ export default function App() {
       return 'https://wallpapercave.com/wp/wp6981159.jpg'; // Daytime background
     } else {
       return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTLdxaJTY19qy6IiFjQw8QY_iMiIOkvzJ37g&usqp=CAU'; // Dawn background
+    }
+  };
+
+  const switchUnits = () => {
+    if (unit === 'metric') {
+      setUnit('imperial');
+      setLetter('F');
+    } else {
+      setUnit('metric');
+      setLetter('C');
     }
   };
 
@@ -157,10 +170,8 @@ export default function App() {
             {weatherDetails.weather} {"\n"}
           </Text>
           <Text style={styles.info}>
-            {weatherDetails.temperature} °C
+            {weatherDetails.temperature} °{unitLetter}
           </Text>
-          
-          
           {/* Additional Weather Information */}
           <View style={styles.weatherDetailsContainer}>
             <View style={styles.weatherDetailsBox}>
@@ -182,12 +193,12 @@ export default function App() {
           <View style={styles.weatherDetailsContainer}>
             <View style={styles.weatherDetailsBox}>
               <Text style={styles.weatherDetailsText}>
-                Highest Temp: {weatherDetails.highestTemp}°C
+                Highest Temp: {weatherDetails.highestTemp}°{unitLetter}
               </Text>
             </View>
             <View style={styles.weatherDetailsBox}>
               <Text style={styles.weatherDetailsText}>
-                Lowest Temp: {weatherDetails.lowestTemp}°C
+                Lowest Temp: {weatherDetails.lowestTemp}°{unitLetter}
               </Text>
             </View>
             <View style={styles.weatherDetailsBox}>
@@ -208,11 +219,14 @@ export default function App() {
               <Image style={styles.largeIcon} source={{ uri: weatherIcon }} />
             </View>
           </TouchableOpacity>
+          <TouchableOpacity onPress={switchUnits} style={styles.testingButton}>
+            <Text style={styles.testingButtonText}>Testing Button</Text>
+          </TouchableOpacity>
           <Text style={styles.info}>
             {weather} {"\n"}
           </Text>
           <Text style={styles.info}>
-            {temperature} °C
+            {temperature} °{unitLetter}
           </Text>
           <View>
             <Text style={styles.subtitle}>Daily Forecast</Text>
@@ -231,7 +245,7 @@ export default function App() {
                     </View>
                     {"\n"}
                     {Weather1} {"\n"}
-                    {Temp1} °C
+                    {Temp1} °{unitLetter}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -244,7 +258,7 @@ export default function App() {
                     </View>
                     {"\n"}
                     {Weather2} {"\n"}
-                    {Temp2} °C
+                    {Temp2} °{unitLetter}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -257,13 +271,12 @@ export default function App() {
                     </View>
                     {"\n"}
                     {Weather3} {"\n"}
-                    {Temp3} °C
+                    {Temp3} °{unitLetter}
                   </Text>
                 </View>
               </TouchableOpacity>
             </ScrollView>
           </TouchableOpacity>
-         
         </SafeAreaView>
       )}
     </ImageBackground>
@@ -274,7 +287,6 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     resizeMode: 'cover',
-    backgroundColor:' #119ee9 '
   },
   container: {
     flex: 1,
@@ -305,7 +317,7 @@ const styles = StyleSheet.create({
   largeIcon: {
     width: 300,
     height: 300,
-     justifyContent: 'center',
+    justifyContent: 'center',
     alignSelf: 'center',
   },
   smallIcon: {
@@ -367,5 +379,17 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: 'center',
   },
+  // Add the styles for the Testing button
+  testingButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 5,
+  },
+  testingButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
 });
+
 
