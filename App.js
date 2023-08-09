@@ -220,7 +220,7 @@ export default function App() {
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={switchUnits} style={styles.testingButton}>
-            <Text style={styles.testingButtonText}>Testing Button</Text>
+            <Text style={styles.testingButtonText}>Swap Units</Text>
           </TouchableOpacity>
           <Text style={styles.info}>
             {weather} {"\n"}
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   testingButton: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 5,
   },
   testingButtonText: {
