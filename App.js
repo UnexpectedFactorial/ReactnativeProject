@@ -33,7 +33,7 @@ export default function App() {
 
   const [weatherDetails, setWeatherDetails] = useState(null);
 
-  const Weather_API = '253682c0bd759acfb4255d4aa08c3dd7';
+  const Weather_API = '##'; //Insert your API key here
 
   useEffect(() => {
     getWeather();
